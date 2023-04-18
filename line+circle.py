@@ -19,27 +19,30 @@ def print_circle(i, h, w, x, y, r):
 def is_green_color(img, x1, y1, x2, y2):
     # 裁剪图像，提取给定区域
     region = img[y1:y2, x1:x2]
-
-    # 将图像转换为HSV颜色空间
-    hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
-
-    # 定义绿色的HSV范围
-    lower_green = (36, 25, 25)
-    upper_green = (70, 255, 255)
-
-    # 利用inRange函数得到绿色像素的掩码
-    mask = cv2.inRange(hsv, lower_green, upper_green)
-
-    # 计算绿色像素所占比例
-    total_pixels = mask.shape[0] * mask.shape[1]
-    green_pixels = cv2.countNonZero(mask)
-    green_ratio = green_pixels / total_pixels
-
-    # 判断绿色像素所占比例是否大于0.3
-    if green_ratio > 0.3:
-        return True
-    else:
+    if np.all(region == 255):
+        # Handle the case where region is all white
         return False
+    else:
+        # 将图像转换为HSV颜色空间
+        hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
+
+        # 定义绿色的HSV范围
+        lower_green = (36, 25, 25)
+        upper_green = (70, 255, 255)
+
+        # 利用inRange函数得到绿色像素的掩码
+        mask = cv2.inRange(hsv, lower_green, upper_green)
+
+        # 计算绿色像素所占比例
+        total_pixels = mask.shape[0] * mask.shape[1]
+        green_pixels = cv2.countNonZero(mask)
+        green_ratio = green_pixels / total_pixels
+
+        # 判断绿色像素所占比例是否大于0.3
+        if green_ratio > 0.3:
+            return True
+        else:
+            return False
 
 
 def circle(img2):
