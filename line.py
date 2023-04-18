@@ -3,9 +3,9 @@ import numpy as np
 
 def opencv_img(img):# img 必须为灰度图
     img2 = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    cv2.imshow('ded',img2)
+    # cv2.imshow('ded',img2)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 转灰度图
-    cv2.imshow('huidutu',img)
+    # cv2.imshow('huidutu',img)
     # 高斯滤波
     img = cv2.GaussianBlur(img, (5,5),1)
     # cv2.imshow('gaosi', img)
@@ -59,7 +59,7 @@ while(True):
     rH = cv2.equalizeHist(r)
     # 合并每一个通道
     img = cv2.merge((bH, gH, rH))
-    cv2.imshow('a',img)
+    # cv2.imshow('a',img)
     # Display the resulting frame
     pt1, pt2 = opencv_img(img)
     cv2.line(frame, pt1, pt2,(0,0,255) , 2)  # 绘制一条蓝线
