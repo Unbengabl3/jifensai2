@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 
+
 def print_circle(i, h, w, x, y, r):
     # print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r), end='\t')
     if (w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
-        print(0, end='')
+        print(00, end='')
     else:
         if (x < w / 2):
             print(1, end='')
@@ -88,29 +89,54 @@ def circle(img2):
             cv2.circle(img2, (x, y), 2, (0, 0, 255), 3)
 
         # 输出圆形信息
+        circle_green = [5,5,5]
+        circle_white = [5,5,5]
         for i, (x, y, r) in enumerate(circles):
-            if(i == 0):
-                # print("c1")
-                if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
-                                   round(y + r / 4)) == True):
-                    print("绿", end='')
-                else:
-                    print("白", end='')
+            if (len(circles) == 1):
                 print_circle(i, h, w, x, y, r)
-            if (i == 1):
-                # print("c2")
-                if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
-                                   round(y + r / 4)) == True):
-                    print("绿", end='')
-                else:
-                    print("白", end='')
                 print_circle(i, h, w, x, y, r)
                 print()
-            if (i >= 2):
-                continue
 
+            else:
+                if (i == 0):
+                    # print("c1")
+                    if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
+                                       round(y + r / 4)) == True):
+                        #print("绿", end='')
+                        circle_green[0] = x
+                        circle_green[1] = y
+                        circle_green[2] = r
+                    else:
+                        #print("白", end='')
+                        circle_white[0] = x
+                        circle_white[0] = y
+                        circle_white[2] = r
+                    # print_circle(i, h, w, x, y, r)
+                if (i == 1):
+                    # print("c2")
+                    if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
+                                       round(y + r / 4)) == True):
+                        #print("绿", end='')
+                        circle_green[0] = x
+                        circle_green[1] = y
+                        circle_green[2] = r
+                    else:
+                        #print("白", end='')
+                        circle_green[0] = x
+                        circle_green[1] = y
+                        circle_white[2] = r
+                    # print_circle(i, h, w, x, y, r)
+                    # print()
+                if (i >= 2):
+                    continue
+                if(len(circle_green) == 3 and len(circle_white) == 3 ):
+                    #print("绿", end='')
+                    print_circle(i, h, w, circle_green[0], circle_green[1], circle_green[2])
+                    #print("白", end='')
+                    print_circle(i, h, w, circle_white[0], circle_white[1], circle_white[2])
+                    print()
 
-def line(img):# img 必须为灰度图
+def line(img):  # img 必须为灰度图
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # print(a)
     img = frame  # 切片后图像  这是为了能够更好的检测，选取图像中的某一位置的图像经行检测
@@ -122,21 +148,21 @@ def line(img):# img 必须为灰度图
     # 合并每一个通道
     img = cv2.merge((bH, gH, rH))
 
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # 转灰度图
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # 转灰度图
 
-    img = cv2.GaussianBlur(img, (5,5),1)
+    img = cv2.GaussianBlur(img, (5, 5), 1)
 
-    img = cv2.blur(img, (3,3))# 5,5
+    img = cv2.blur(img, (3, 3))  # 5,5
 
     img = cv2.medianBlur(img, 5)
     # 双边滤波
 
     edges = cv2.Canny(img, 10, 200, apertureSize=3)  # 边缘检测 #10
-    cv2.imshow('Canny',edges)
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, 20) # 直线检测
+    cv2.imshow('Canny', edges)
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, 20)  # 直线检测
     # print(lines,'\n')
     if lines is None:
-        return ((0,1),(1,0))
+        return ((0, 1), (1, 0))
     for line in lines:
         rho = line[0][0]  # 第一个元素是距离rho
         theta = line[0][1]  # 第二个元素是角度theta
@@ -149,8 +175,9 @@ def line(img):# img 必须为灰度图
             pt1 = (0, int(rho / np.sin(theta)))  # 该直线与第一列的交点
             # 该直线与最后一列的交点
             pt2 = (img.shape[1], int((rho - img.shape[1] * np.cos(theta)) / np.sin(theta)))
-        return (pt1 ,pt2)
+        return (pt1, pt2)
     pass
+
 
 cap = cv2.VideoCapture(0)
 while (True):
@@ -166,4 +193,3 @@ while (True):
         break
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
