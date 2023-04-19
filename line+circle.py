@@ -109,7 +109,7 @@ def circle(img2):
                     else:
                         #print("白", end='')
                         circle_white[0] = x
-                        circle_white[0] = y
+                        circle_white[1] = y
                         circle_white[2] = r
                     # print_circle(i, h, w, x, y, r)
                 if (i == 1):
