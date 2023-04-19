@@ -122,8 +122,8 @@ def circle(img2):
                         circle_green[2] = r
                     else:
                         #print("白", end='')
-                        circle_green[0] = x
-                        circle_green[1] = y
+                        circle_white[0] = x
+                        circle_white[1] = y
                         circle_white[2] = r
                     # print_circle(i, h, w, x, y, r)
                     # print()
@@ -136,10 +136,10 @@ def circle(img2):
                     print_circle(i, h, w, circle_white[0], circle_white[1], circle_white[2])
                     print()
 
-def line(img):  # img 必须为灰度图
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+def line(img):
+    # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # print(a)
-    img = frame  # 切片后图像  这是为了能够更好的检测，选取图像中的某一位置的图像经行检测
+    # img = frame  # 切片后图像  这是为了能够更好的检测，选取图像中的某一位置的图像经行检测
     # 直方滤波
     (b, g, r) = cv2.split(img)
     bH = cv2.equalizeHist(b)
