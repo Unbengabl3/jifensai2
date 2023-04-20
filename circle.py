@@ -14,21 +14,40 @@ while(True):
     dst_img = cv2.medianBlur(frame, 7)
     # cv2.imshow('dst', dst_img)
 
-    img_gray = cv2.cvtColor(dst_img, cv2.COLOR_BGR2GRAY)
+    #img_gray = cv2.cvtColor(dst_img, cv2.COLOR_BGR2GRAY)
 
     # 进行高斯模糊
-    img_blur = cv2.GaussianBlur(img_gray, (5, 5), 0)
+    img_blur = cv2.GaussianBlur(dst_img, (5, 5), 0)
     # cv2.imshow('blur', img_blur)
+
+    # 利用Sobel算子计算x和y方向上的梯度
+    sobelx = cv2.Sobel(img_blur, cv2.CV_64F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(img_blur, cv2.CV_64F, 0, 1, ksize=3)
+
+    # 计算梯度的幅值和方向
+    mag, ang = cv2.cartToPolar(sobelx, sobely)
+
+    # 设定阈值，提取出强梯度
+    threshold = 50
+    mag_thresh = np.zeros_like(mag)
+    mag_thresh[mag > threshold] = mag[mag > threshold]
+
+    # 对提取出的梯度进行二值化处理
+    _, binary = cv2.threshold(mag_thresh, 0, 255, cv2.THRESH_BINARY)
+    cv2.imshow('binary', binary)
+    binary = cv2.convertScaleAbs(binary)
+    img_gray = cv2.cvtColor(binary, cv2.COLOR_BGR2GRAY)
+    cv2.imshow('gyay', img_gray)
 
     # 设定圆形检测的参数
     min_radius = 20
     max_radius = 200
-    dp = 1.5
-    param1 = 300
-    param2 = 0.93
+    dp = 1
+    param1 = 80
+    param2 = 70
 
     # 进行圆形检测
-    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT_ALT, dp, minDist=20, param1=param1, param2=param2,
+    circles = cv2.HoughCircles(img_gray, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
                                minRadius=min_radius, maxRadius=max_radius)
 
     # 绘制检测到的圆形

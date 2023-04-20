@@ -61,12 +61,12 @@ def circle(img2):
     # 设定圆形检测的参数
     min_radius = 20
     max_radius = 200
-    dp = 1.5
-    param1 = 300
-    param2 = 0.93
+    dp = 1
+    param1 = 30
+    param2 = 70
 
     # 进行圆形检测
-    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT_ALT, dp, minDist=20, param1=param1, param2=param2,
+    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
                                minRadius=min_radius, maxRadius=max_radius)
 
     # 绘制检测到的圆形
