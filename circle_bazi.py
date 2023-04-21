@@ -1,23 +1,54 @@
 # https://blog.csdn.net/libaineu2004/article/details/122807673
 import cv2
+import serial
 import numpy as np
+from struct import pack
 
-circles_list = []
-counter = 1
-# 读取图像
-cap = cv2.VideoCapture(1)
-while(True):
-    ret, frame = cap.read()
-    h, w = frame.shape[:2]
+# se = serial.Serial("COM3", 115200, timeout=1)
+
+# def send_data(SDI_Point0, SDI_Point1):
+#     # 设置校验位并发送包头'AC'
+#     sumA = 0
+#     sumB = 0
+#     data = bytearray([0x41, 0x43])
+#     se.write(data)
+#
+#     # 发送消息类型和消息长度
+#     data = bytearray([0x02, 8])  # 0x02为消息类型，此处值为2。若为1就是0x01。4是消息长度，只发1个数据就是4,2个就是8
+#     for b in data:
+#         sumB = sumB + b
+#         sumA = sumA + sumB
+#     se.write(data)
+#
+#     # 发送数据
+#     ###################################################
+#     float_bytes = pack('f', float(SDI_Point0))
+#     for b in float_bytes:
+#         sumB = sumB + b
+#         sumA = sumA + sumB
+#     se.write(float_bytes)
+#
+#     var_bytes = pack('f', float(SDI_Point1))  # -0.16 * SDI_Point1
+#     for b in var_bytes:
+#         sumB = sumB + b
+#         sumA = sumA + sumB
+#     se.write(var_bytes)
+#     ###################################################
+#
+#     # 发送校验位
+#     while sumA > 255:
+#         sumA = sumA - 255
+#     while sumB > 255:
+#         sumB = sumB - 255
+#     data = bytearray([sumA, sumB])
+#     se.write(data)
+
+def findcircle2(img3):
+    h, w = img3.shape[:2]
     # print(h, w)
-    # 进行中值滤波
-    # dst_img = cv2.medianBlur(frame, 7)
-    # cv2.imshow('dst', dst_img)
-
-    #img_gray = cv2.cvtColor(dst_img, cv2.COLOR_BGR2GRAY)
 
     # 进行高斯模糊
-    img_blur = cv2.GaussianBlur(frame, (5, 5), 0)
+    img_blur = cv2.GaussianBlur(img3, (5, 5), 0)
     # cv2.imshow('blur', img_blur)
 
     # 利用Sobel算子计算x和y方向上的梯度
@@ -34,8 +65,9 @@ while(True):
 
     # 对提取出的梯度进行二值化处理
     _, binary = cv2.threshold(mag_thresh, 0, 255, cv2.THRESH_BINARY)
-    cv2.imshow('binary', binary)
+    # cv2.imshow('binary', binary)
     binary = cv2.convertScaleAbs(binary)
+
     img_gray = cv2.cvtColor(binary, cv2.COLOR_BGR2GRAY)
     cv2.imshow('gyay', img_gray)
 
@@ -64,41 +96,34 @@ while(True):
                 circles.pop(i + 1)
             else:
                 i += 1
-        # sum = [1, 1, 1]
-        # ave = [1, 1, 1]
-        # for (x, y, r) in circles:
-        #     for i, (x, y, r) in enumerate(circles):
-        #         sum[0] += x
-        #         sum[1] += y
-        #         sum[2] += r
-        #
-        #     ave[0] = sum[0] / len(circles)
-        #     ave[1] = sum[1] / len(circles)
-        #     ave[2] = sum[2] / len(circles)
-        #     sum[0] = sum[1] = sum[2] = 1
-        #
-        #     cv2.circle(frame, (ave[0], ave[1]), ave[2], (0, 255, 0), 2)
+
         # 绘制检测到的圆形
         for (x, y, r) in circles:
-            cv2.circle(frame, (x, y), r, (0, 255, 0), 2)
-            cv2.circle(frame, (x, y), 2, (0, 0, 255), 3)
+            cv2.circle(img3, (x, y), r, (0, 255, 0), 2)
+            cv2.circle(img3, (x, y), 2, (0, 0, 255), 3)
 
             # 输出圆形信息
             for i, (x, y, r) in enumerate(circles):
-                print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r))
+                # print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r))
                 souce = [0, 0]
-                souce[0] = (x - w / 2) * 100 / w
-                souce[1] = (y - h / 2) * 100 / h
-                # if(w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
-                #     print(0)
-                # else:
-                #     if(x < w / 2): print(1)
-                #     else: print(2)
-                #     if (y < h / 2): print(1)
-                #     else: print(2)
+                souce[0] = (x - w / 2 + 40) * 200 / w
+                souce[1] = (y - h / 2 + 40) * 200 / h
+                print(souce[0], souce[1])
+                # send_data(souce[0], souce[1])
+
+    else:
+        # send_data(0, 0)
+        print(0, 0)
 
     # 显示结果
-    cv2.imshow('result', frame)
+    cv2.imshow('result', img3)
+
+
+# 读取图像
+cap2 = cv2.VideoCapture(0)
+while(True):
+    ret2, frame2 = cap2.read()
+    findcircle2(frame2)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cv2.waitKey(0)
