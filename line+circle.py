@@ -4,17 +4,22 @@ import numpy as np
 #输出内容先x再y，左右方向x，上下方向y，靠左上为1+++++++++++++++++++++++++++++++++++++++
 def print_circle(i, h, w, x, y, r):
     # print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r), end='\t')
-    if (w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
-        print(00, end='')
-    else:
-        if (x < w / 2):
-            print(1, end='')
-        else:
-            print(2, end='')
-        if (y < h / 2):
-            print(1, end=' ')
-        else:
-            print(2, end=' ')
+    # if (w / 2 - 50 < x < w / 2 + 50 and h / 2 - 50 < y < h / 2 + 50):
+    #     print(00, end='')
+    # else:
+    #     if (x < w / 2):
+    #         print(1, end='')
+    #     else:
+    #         print(2, end='')
+    #     if (y < h / 2):
+    #         print(1, end=' ')
+    #     else:
+    #         print(2, end=' ')
+    souce = [0, 0]
+    souce[0] = (x - w / 2) * 100 / w
+    souce[1] = (y - h / 2) * 100 / h
+
+    print(souce[0], souce[1])
 
 
 def is_green_color(img, x1, y1, x2, y2):
@@ -54,32 +59,50 @@ def circle(img2):
     # dst_img = cv2.medianBlur(img2, 7)
     # cv2.imshow("dst", dst_img)
 
-    img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    #img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
     # 进行高斯模糊
-    img_blur = cv2.GaussianBlur(img_gray, (5, 5), 0)
+    img_blur = cv2.GaussianBlur(img2, (5, 5), 0)
     cv2.imshow("blur", img_blur)
 
-    # 设定圆形检测的参数
-    # min_radius = 20
-    # max_radius = 200
-    # dp = 1
-    # param1 = 30
-    # param2 = 70
-    #
-    # # 进行圆形检测
-    # circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
-    #                            minRadius=min_radius, maxRadius=max_radius)
+    sobelx = cv2.Sobel(img_blur, cv2.CV_64F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(img_blur, cv2.CV_64F, 0, 1, ksize=3)
 
+    # 计算梯度的幅值和方向
+    mag, ang = cv2.cartToPolar(sobelx, sobely)
+
+    # 设定阈值，提取出强梯度
+    threshold = 50
+    mag_thresh = np.zeros_like(mag)
+    mag_thresh[mag > threshold] = mag[mag > threshold]
+
+    # 对提取出的梯度进行二值化处理
+    _, binary = cv2.threshold(mag_thresh, 0, 255, cv2.THRESH_BINARY)
+    cv2.imshow('binary', binary)
+    binary = cv2.convertScaleAbs(binary)
+    img_gray = cv2.cvtColor(binary, cv2.COLOR_BGR2GRAY)
+    cv2.imshow('gyay', img_gray)
+
+    # 设定圆形检测的参数
     min_radius = 40
     max_radius = 400
-    dp = 1.5
-    param1 = 300
-    param2 = 0.95
+    dp = 1
+    param1 = 100
+    param2 = 70
 
     # 进行圆形检测
-    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT_ALT, dp, minDist=20, param1=param1, param2=param2,
+    circles = cv2.HoughCircles(img_gray, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
                                minRadius=min_radius, maxRadius=max_radius)
+
+    # min_radius = 40
+    # max_radius = 400
+    # dp = 1.5
+    # param1 = 300
+    # param2 = 0.95
+    #
+    # # 进行圆形检测
+    # circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT_ALT, dp, minDist=20, param1=param1, param2=param2,
+    #                            minRadius=min_radius, maxRadius=max_radius)
 
     # 绘制检测到的圆形
     if circles is not None:
@@ -103,6 +126,7 @@ def circle(img2):
         for i, (x, y, r) in enumerate(circles):
             if (i == 0):
                 print_circle(i, h, w, x, y, r)
+                print()
             if ( i >= 1):
                 continue
 

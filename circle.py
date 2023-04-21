@@ -5,19 +5,19 @@ import numpy as np
 circles_list = []
 counter = 1
 # 读取图像
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 while(True):
     ret, frame = cap.read()
     h, w = frame.shape[:2]
     # print(h, w)
     # 进行中值滤波
-    dst_img = cv2.medianBlur(frame, 7)
+    # dst_img = cv2.medianBlur(frame, 7)
     # cv2.imshow('dst', dst_img)
 
     #img_gray = cv2.cvtColor(dst_img, cv2.COLOR_BGR2GRAY)
 
     # 进行高斯模糊
-    img_blur = cv2.GaussianBlur(dst_img, (5, 5), 0)
+    img_blur = cv2.GaussianBlur(frame, (5, 5), 0)
     # cv2.imshow('blur', img_blur)
 
     # 利用Sobel算子计算x和y方向上的梯度
@@ -43,8 +43,9 @@ while(True):
     min_radius = 20
     max_radius = 200
     dp = 1
-    param1 = 80
-    param2 = 70
+    param1 = 120
+    param2 = 120
+    # 此参数用于识别靶子
 
     # 进行圆形检测
     circles = cv2.HoughCircles(img_gray, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
@@ -63,7 +64,20 @@ while(True):
                 circles.pop(i + 1)
             else:
                 i += 1
-
+        # sum = [1, 1, 1]
+        # ave = [1, 1, 1]
+        # for (x, y, r) in circles:
+        #     for i, (x, y, r) in enumerate(circles):
+        #         sum[0] += x
+        #         sum[1] += y
+        #         sum[2] += r
+        #
+        #     ave[0] = sum[0] / len(circles)
+        #     ave[1] = sum[1] / len(circles)
+        #     ave[2] = sum[2] / len(circles)
+        #     sum[0] = sum[1] = sum[2] = 1
+        #
+        #     cv2.circle(frame, (ave[0], ave[1]), ave[2], (0, 255, 0), 2)
         # 绘制检测到的圆形
         for (x, y, r) in circles:
             cv2.circle(frame, (x, y), r, (0, 255, 0), 2)
@@ -72,13 +86,13 @@ while(True):
             # 输出圆形信息
             for i, (x, y, r) in enumerate(circles):
                 print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r))
-                if(w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
-                    print(0)
-                else:
-                    if(x < w / 2): print(1)
-                    else: print(2)
-                    if (y < h / 2): print(1)
-                    else: print(2)
+                # if(w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
+                #     print(0)
+                # else:
+                #     if(x < w / 2): print(1)
+                #     else: print(2)
+                #     if (y < h / 2): print(1)
+                #     else: print(2)
 
     # 显示结果
     cv2.imshow('result', frame)
