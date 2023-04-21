@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-
+#输出内容先x再y，左右方向x，上下方向y，靠左上为1+++++++++++++++++++++++++++++++++++++++
 def print_circle(i, h, w, x, y, r):
     # print("Circle {}: x = {}, y = {}, r = {}".format(i + 1, x, y, r), end='\t')
     if (w / 2 - 10 < x < w / 2 + 10 and h / 2 - 10 < y < h / 2 + 10):
@@ -51,22 +51,34 @@ def circle(img2):
     # print(h, w)
 
     # 进行中值滤波
-    dst_img = cv2.medianBlur(img2, 7)
+    # dst_img = cv2.medianBlur(img2, 7)
+    # cv2.imshow("dst", dst_img)
 
-    img_gray = cv2.cvtColor(dst_img, cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
     # 进行高斯模糊
     img_blur = cv2.GaussianBlur(img_gray, (5, 5), 0)
+    cv2.imshow("blur", img_blur)
 
     # 设定圆形检测的参数
-    min_radius = 20
-    max_radius = 200
-    dp = 1
-    param1 = 30
-    param2 = 70
+    # min_radius = 20
+    # max_radius = 200
+    # dp = 1
+    # param1 = 30
+    # param2 = 70
+    #
+    # # 进行圆形检测
+    # circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
+    #                            minRadius=min_radius, maxRadius=max_radius)
+
+    min_radius = 40
+    max_radius = 400
+    dp = 1.5
+    param1 = 300
+    param2 = 0.95
 
     # 进行圆形检测
-    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT, dp, minDist=20, param1=param1, param2=param2,
+    circles = cv2.HoughCircles(img_blur, cv2.HOUGH_GRADIENT_ALT, dp, minDist=20, param1=param1, param2=param2,
                                minRadius=min_radius, maxRadius=max_radius)
 
     # 绘制检测到的圆形
@@ -88,53 +100,59 @@ def circle(img2):
             cv2.circle(img2, (x, y), r, (0, 255, 0), 2)
             cv2.circle(img2, (x, y), 2, (0, 0, 255), 3)
 
-        # 输出圆形信息
-        circle_green = [5,5,5]
-        circle_white = [5,5,5]
         for i, (x, y, r) in enumerate(circles):
-            if (len(circles) == 1):
+            if (i == 0):
                 print_circle(i, h, w, x, y, r)
-                print_circle(i, h, w, x, y, r)
-                print()
+            if ( i >= 1):
+                continue
 
-            else:
-                if (i == 0):
-                    # print("c1")
-                    if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
-                                       round(y + r / 4)) == True):
-                        #print("绿", end='')
-                        circle_green[0] = x
-                        circle_green[1] = y
-                        circle_green[2] = r
-                    else:
-                        #print("白", end='')
-                        circle_white[0] = x
-                        circle_white[1] = y
-                        circle_white[2] = r
-                    # print_circle(i, h, w, x, y, r)
-                if (i == 1):
-                    # print("c2")
-                    if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
-                                       round(y + r / 4)) == True):
-                        #print("绿", end='')
-                        circle_green[0] = x
-                        circle_green[1] = y
-                        circle_green[2] = r
-                    else:
-                        #print("白", end='')
-                        circle_white[0] = x
-                        circle_white[1] = y
-                        circle_white[2] = r
-                    # print_circle(i, h, w, x, y, r)
-                    # print()
-                if (i >= 2):
-                    continue
-                if(len(circle_green) == 3 and len(circle_white) == 3 ):
-                    #print("绿", end='')
-                    print_circle(i, h, w, circle_green[0], circle_green[1], circle_green[2])
-                    #print("白", end='')
-                    print_circle(i, h, w, circle_white[0], circle_white[1], circle_white[2])
-                    print()
+        # 输出圆形信息
+        # circle_green = [5,5,5]
+        # circle_white = [5,5,5]
+        # for i, (x, y, r) in enumerate(circles):
+        #     if (len(circles) == 1):
+        #         print_circle(i, h, w, x, y, r)
+        #         print_circle(i, h, w, x, y, r)
+        #         print()
+        #
+        #     else:
+        #         if (i == 0):
+        #             # print("c1")
+        #             if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
+        #                                round(y + r / 4)) == True):
+        #                 #print("绿", end='')
+        #                 circle_green[0] = x
+        #                 circle_green[1] = y
+        #                 circle_green[2] = r
+        #             else:
+        #                 #print("白", end='')
+        #                 circle_white[0] = x
+        #                 circle_white[1] = y
+        #                 circle_white[2] = r
+        #             # print_circle(i, h, w, x, y, r)
+        #         if (i == 1):
+        #             # print("c2")
+        #             if (is_green_color(img2, round(x - r / 4), round(y - r / 4), round(x + r / 4),
+        #                                round(y + r / 4)) == True):
+        #                 #print("绿", end='')
+        #                 circle_green[0] = x
+        #                 circle_green[1] = y
+        #                 circle_green[2] = r
+        #             else:
+        #                 #print("白", end='')
+        #                 circle_white[0] = x
+        #                 circle_white[1] = y
+        #                 circle_white[2] = r
+        #             # print_circle(i, h, w, x, y, r)
+        #             # print()
+        #         if (i >= 2):
+        #             continue
+        #         if(len(circle_green) == 3 and len(circle_white) == 3 ):
+        #             #print("绿", end='')
+        #             print_circle(i, h, w, circle_green[0], circle_green[1], circle_green[2])
+        #             #print("白", end='')
+        #             print_circle(i, h, w, circle_white[0], circle_white[1], circle_white[2])
+        #             print()
 
 def line(img):
     # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -179,7 +197,8 @@ def line(img):
     pass
 
 
-cap = cv2.VideoCapture(0)
+
+cap = cv2.VideoCapture(1)
 while (True):
     ret, frame = cap.read()
     circle(frame)
